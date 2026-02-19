@@ -96,7 +96,6 @@ A função recebe como parâmetro:
 
 E valida cada um antes da execução do teste principal.
 
-
 ### Arquivos
 
 #### `limpaAmbiente.js`
@@ -108,7 +107,6 @@ Contém toda a lógica de:
 * Exclusão condicional
 
 Não valida UI. Atua apenas como **preparação de cenário**.
-
 
 #### `limpandoAmbiente.cy.js`
 
@@ -128,7 +126,6 @@ No ambiente onde os testes foram executados:
 * O login via UI era lento
 * Repetir login a cada teste aumentava drasticamente o tempo de execução
 
-
 ### Solução adotada
 
 Foi implementado um login **100% via API**, com captura do `jwtToken` e injeção direta no contexto da aplicação.
@@ -139,7 +136,6 @@ Isso permite:
 * Independência da UI de login
 * Maior estabilidade dos testes
 
-
 ### Arquivos
 
 #### `loginApi.js`
@@ -149,7 +145,6 @@ Responsável por:
 * Realizar login via API
 * Retornar o JWT Token
 * Centralizar autenticação
-
 
 #### `logando.cy.js`
 
@@ -172,7 +167,6 @@ Validações envolvendo:
 
 Esses cenários rapidamente geram código repetido e difícil de manter.
 
-
 ### Solução adotada
 
 Separação clara entre:
@@ -184,7 +178,6 @@ Uso intensivo de:
 
 * Mapas de categoria → texto esperado
 * Mapas de categoria → tipo de sinalizador
-
 
 ### Arquivos
 
@@ -198,7 +191,6 @@ Contém:
 
 Não executa ações na UI.
 
-
 #### `commands.js`
 
 Define comandos Cypress como:
@@ -208,7 +200,6 @@ Define comandos Cypress como:
 * Validação dos resultados filtrados
 
 Esses comandos representam **comportamentos**, não regras internas.
-
 
 #### `validandoCategoria.cy.js`
 
@@ -235,7 +226,6 @@ Tabelas com regras complexas:
 
 Misturar tudo isso em um único teste torna o código ilegível.
 
-
 ### Solução adotada
 
 * Múltiplas varreduras da tabela
@@ -243,7 +233,6 @@ Misturar tudo isso em um único teste torna o código ilegível.
 * Uso de índices para garantir alinhamento linha × input × embalagem
 
 A lógica foi separada para permitir manutenção sem quebrar outros cenários.
-
 
 ### Arquivos
 
@@ -255,7 +244,6 @@ Responsável por:
 * Extração de valores
 * Normalização de texto
 
-
 #### `commands.js`
 
 Encapsula ações como:
@@ -263,7 +251,6 @@ Encapsula ações como:
 * Abrir modal
 * Percorrer linhas
 * Executar validações conforme o tipo identificado
-
 
 #### `validandoTabela.cy.js`
 
@@ -313,9 +300,7 @@ Validar campo a campo manualmente tornava o teste:
 
 -   Difícil de manter
 
-* * * * *
-
-🔹 Solução adotada
+### 🔹 Solução adotada
 
 Foi criada uma **validação matricial baseada em cruzamento de dados**, onde:
 
@@ -349,10 +334,7 @@ Essa abordagem permite:
 
 -   Reduzir repetição de código
 
-* * * * *
-
-🔹 Arquivos
-
+### 🔹 Arquivos
 
 ### `helpers.js`
 
@@ -365,8 +347,6 @@ Responsável por:
 -   Orquestrar chamadas de validação
 
 Contém apenas lógica estrutural, sem regra de negócio específica.
-
-* * * * *
 
 ### `commands.js`
 
@@ -386,8 +366,6 @@ Esse comando:
 
 A responsabilidade do comando é exclusivamente validar **uma célula**.
 
-* * * * *
-
 ### `validandoDados.cy.js`
 
 Spec que consome:
@@ -398,9 +376,7 @@ Spec que consome:
 
 O teste apenas declara o cenário, enquanto a lógica permanece desacoplada.
 
-* * * * *
-
-🔹 Quando utilizar essa abordagem
+### 🔹 Quando utilizar essa abordagem
 
 ✔ Estruturas que parecem tabela, mas não usam `<table>`\
 ✔ Layout construído com `div` + CSS Grid ou Flex\
@@ -408,9 +384,7 @@ O teste apenas declara o cenário, enquanto a lógica permanece desacoplada.
 ✔ Grandes massas de dados\
 ✔ Necessidade de validação estrutural previsível
 
-* * * * *
-
-🔹 Limitação conhecida
+### 🔹 Limitação conhecida
 
 Essa estratégia depende de:
 
@@ -420,9 +394,7 @@ Essa estratégia depende de:
 
 Caso a UI altere a ordem dos elementos, o alinhamento por índice precisará ser ajustado.
 
-* * * * *
-
-🔹 Observação final
+### 🔹 Observação final
 
 Essa solução foi criada para resolver um problema específico de pseudo tabelas, mas pode ser aplicada a qualquer estrutura repetitiva baseada em **alinhamento posicional**, desde que exista previsibilidade estrutural entre:
 
