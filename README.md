@@ -27,30 +27,37 @@ Este repositório existe porque muitos cursos ensinam *como usar o Cypress*, mas
 cypress/
  ├─ e2e/
  │   ├─ Limpando Ambiente/
- │   │   ├─ limpaAmbiente.js          # Preparação de ambiente via API
- │   │   └─ limpandoAmbiente.cy.js    # Spec que consome a limpeza
+ │   │   ├─ limpaAmbiente.js
+ │   │   └─ limpandoAmbiente.cy.js
  │   │
  │   ├─ LoginAPI/
- │   │   ├─ loginApi.js               # Login via API e retorno do JWT
- │   │   └─ logando.cy.js              # Spec de uso do login via API
+ │   │   ├─ loginApi.js
+ │   │   └─ logando.cy.js
  │   │
  │   ├─ Valida Categoria e Filtro/
- │   │   ├─ commands.js               # Ações de alto nível (UI / comportamento)
- │   │   ├─ helpers.js                # Mapas e regras de validação
- │   │   └─ validandoCategoria.cy.js  # Spec de validação de categorias
+ │   │   ├─ commands.js
+ │   │   ├─ helpers.js
+ │   │   └─ validandoCategoria.cy.js
  │   │
  │   ├─ Valida Linha x Coluna/
- │   │   ├─ commands.js               # Ações de validação da tabela
- │   │   ├─ helpers.js                # Lógica para identificar tipo de linha
- │   │   └─ validandoTabela.cy.js     # Spec de validação da tabela
+ │   │   ├─ commands.js
+ │   │   ├─ helpers.js
+ │   │   └─ validandoTabela.cy.js
+ │   │
+ │   ├─ Validação Matricial de Dados/
+ │   │   ├─ commands.js
+ │   │   ├─ helpers.js
+ │   │   └─ validandoDados.cy.js
  │ 
  ├─ fixtures/
  │   └─ example.json
  │
  ├─ support/
  │   ├─ Estrutura de dados para teste/
- │   │   └─ envVariaveis.js            # Centralização de dados e variáveis
- │   ├─ commands.js                   # Registro global de Cypress.Commands
+ │   │   ├─ constants.js
+ │   │   ├─ dataTest.js
+ │   │   └─ envVariaveis.js
+ │   ├─ commands.js
  │   └─ e2e.js
  │
  └─ cypress.config.js
@@ -72,7 +79,6 @@ Isso torna o teste:
 * Dependente de estado
 * Difícil de reexecutar
 
----
 
 ### Solução adotada
 
@@ -90,7 +96,6 @@ A função recebe como parâmetro:
 
 E valida cada um antes da execução do teste principal.
 
----
 
 ### Arquivos
 
@@ -104,7 +109,6 @@ Contém toda a lógica de:
 
 Não valida UI. Atua apenas como **preparação de cenário**.
 
----
 
 #### `limpandoAmbiente.cy.js`
 
@@ -124,7 +128,6 @@ No ambiente onde os testes foram executados:
 * O login via UI era lento
 * Repetir login a cada teste aumentava drasticamente o tempo de execução
 
----
 
 ### Solução adotada
 
@@ -136,7 +139,6 @@ Isso permite:
 * Independência da UI de login
 * Maior estabilidade dos testes
 
----
 
 ### Arquivos
 
@@ -148,7 +150,6 @@ Responsável por:
 * Retornar o JWT Token
 * Centralizar autenticação
 
----
 
 #### `logando.cy.js`
 
@@ -171,7 +172,6 @@ Validações envolvendo:
 
 Esses cenários rapidamente geram código repetido e difícil de manter.
 
----
 
 ### Solução adotada
 
@@ -185,7 +185,6 @@ Uso intensivo de:
 * Mapas de categoria → texto esperado
 * Mapas de categoria → tipo de sinalizador
 
----
 
 ### Arquivos
 
@@ -199,7 +198,6 @@ Contém:
 
 Não executa ações na UI.
 
----
 
 #### `commands.js`
 
@@ -211,7 +209,6 @@ Define comandos Cypress como:
 
 Esses comandos representam **comportamentos**, não regras internas.
 
----
 
 #### `validandoCategoria.cy.js`
 
@@ -238,7 +235,6 @@ Tabelas com regras complexas:
 
 Misturar tudo isso em um único teste torna o código ilegível.
 
----
 
 ### Solução adotada
 
@@ -248,7 +244,6 @@ Misturar tudo isso em um único teste torna o código ilegível.
 
 A lógica foi separada para permitir manutenção sem quebrar outros cenários.
 
----
 
 ### Arquivos
 
@@ -260,7 +255,6 @@ Responsável por:
 * Extração de valores
 * Normalização de texto
 
----
 
 #### `commands.js`
 
@@ -270,11 +264,171 @@ Encapsula ações como:
 * Percorrer linhas
 * Executar validações conforme o tipo identificado
 
----
 
 #### `validandoTabela.cy.js`
 
 Spec que apenas descreve **o cenário a ser validado**, sem lógica interna.
+
+---
+
+## 🔹 Validação Matricial de Dados (Pseudo Tabelas)
+
+### Problema
+
+Em alguns cenários, o sistema apresentava estruturas visualmente idênticas a tabelas, porém **não utilizava marcações HTML semânticas de tabela**, como:
+
+-   `<table>`
+
+-   `<tr>`
+
+-   `<td>`
+
+-   `<th>`
+
+Ou seja, tratavam-se de **pseudo tabelas**, normalmente construídas com `div`, `span` e grids CSS.
+
+Isso inviabilizava abordagens tradicionais de:
+
+-   Percorrer `<tr>`
+
+-   Mapear `<td>` por coluna
+
+-   Usar estrutura semântica para validação
+
+Além disso:
+
+-   Existiam múltiplos campos iguais
+
+-   Diversas colunas financeiras
+
+-   Grande volume de dados por linha
+
+-   Repetição estrutural entre blocos
+
+Validar campo a campo manualmente tornava o teste:
+
+-   Extenso
+
+-   Repetitivo
+
+-   Difícil de manter
+
+* * * * *
+
+🔹 Solução adotada
+
+Foi criada uma **validação matricial baseada em cruzamento de dados**, onde:
+
+-   Um array bidimensional representa os valores esperados (linha × coluna)
+
+-   Um array separado representa os seletores de cada "coluna"
+
+-   A validação ocorre por cruzamento de índices
+
+### Estrutura utilizada
+
+-   `array0` → matriz de valores esperados
+
+-   `array1` → lista de seletores (`data-testid` ou seletores CSS)
+
+O helper percorre:
+
+-   Índice da linha
+
+-   Índice da coluna
+
+E envia os dados para um comando responsável exclusivamente por validar o texto renderizado.
+
+Essa abordagem permite:
+
+-   Validar pseudo tabelas sem depender de `<table>`
+
+-   Manter alinhamento estrutural entre UI e dataset
+
+-   Escalar facilmente para múltiplas linhas
+
+-   Reduzir repetição de código
+
+* * * * *
+
+🔹 Arquivos
+
+
+### `helpers.js`
+
+Responsável por:
+
+-   Percorrer a matriz de dados
+
+-   Cruzar índice da linha com índice da coluna
+
+-   Orquestrar chamadas de validação
+
+Contém apenas lógica estrutural, sem regra de negócio específica.
+
+* * * * *
+
+### `commands.js`
+
+Define o comando:
+
+`cy.validacaoArrayMatricial()`
+
+Esse comando:
+
+-   Localiza o elemento pelo seletor
+
+-   Aplica `.eq(index)` para mapear a posição da linha
+
+-   Normaliza o texto
+
+-   Compara com o valor esperado
+
+A responsabilidade do comando é exclusivamente validar **uma célula**.
+
+* * * * *
+
+### `validandoDados.cy.js`
+
+Spec que consome:
+
+-   Matriz de dados
+
+-   Array de seletores
+
+O teste apenas declara o cenário, enquanto a lógica permanece desacoplada.
+
+* * * * *
+
+🔹 Quando utilizar essa abordagem
+
+✔ Estruturas que parecem tabela, mas não usam `<table>`\
+✔ Layout construído com `div` + CSS Grid ou Flex\
+✔ Muitos campos repetidos\
+✔ Grandes massas de dados\
+✔ Necessidade de validação estrutural previsível
+
+* * * * *
+
+🔹 Limitação conhecida
+
+Essa estratégia depende de:
+
+-   Ordem fixa dos elementos
+
+-   Estrutura estável de renderização
+
+Caso a UI altere a ordem dos elementos, o alinhamento por índice precisará ser ajustado.
+
+* * * * *
+
+🔹 Observação final
+
+Essa solução foi criada para resolver um problema específico de pseudo tabelas, mas pode ser aplicada a qualquer estrutura repetitiva baseada em **alinhamento posicional**, desde que exista previsibilidade estrutural entre:
+
+-   Dataset esperado
+
+-   Renderização na UI
 
 ---
 
