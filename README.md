@@ -300,6 +300,7 @@ Validar campo a campo manualmente tornava o teste:
 
 -   Difícil de manter
 
+
 ### 🔹 Solução adotada
 
 Foi criada uma **validação matricial baseada em cruzamento de dados**, onde:
@@ -333,6 +334,7 @@ Essa abordagem permite:
 -   Escalar facilmente para múltiplas linhas
 
 -   Reduzir repetição de código
+
 
 ### 🔹 Arquivos
 
@@ -376,6 +378,7 @@ Spec que consome:
 
 O teste apenas declara o cenário, enquanto a lógica permanece desacoplada.
 
+
 ### 🔹 Quando utilizar essa abordagem
 
 ✔ Estruturas que parecem tabela, mas não usam `<table>`\
@@ -383,6 +386,7 @@ O teste apenas declara o cenário, enquanto a lógica permanece desacoplada.
 ✔ Muitos campos repetidos\
 ✔ Grandes massas de dados\
 ✔ Necessidade de validação estrutural previsível
+
 
 ### 🔹 Limitação conhecida
 
@@ -393,6 +397,7 @@ Essa estratégia depende de:
 -   Estrutura estável de renderização
 
 Caso a UI altere a ordem dos elementos, o alinhamento por índice precisará ser ajustado.
+
 
 ### 🔹 Observação final
 
